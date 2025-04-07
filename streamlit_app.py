@@ -76,17 +76,6 @@ if "data" in st.session_state:
     st.subheader("📈 Conversion Rates Summary")
     summary = df_period.groupby(["period", "data_set"])[metrics].mean().reset_index()
     st.dataframe(summary.round(4), use_container_width=True)
-
-    # Line Chart
-    st.subheader("📊 Line Chart: Daily Trends")
-    selected_metric = st.selectbox("Select metric to plot", metrics)
-    daily_trend = df_period.groupby(["date", "data_set"])[selected_metric].mean().reset_index()
-    
-    fig_line, ax_line = plt.subplots(figsize=(6, 4))
-    sns.lineplot(data=daily_trend, x="date", y=selected_metric, hue="data_set", marker="o", ax=ax_line)
-    ax_line.set_title(f"Daily {selected_metric.replace('_', ' ').title()} Trend")
-    plt.tight_layout()
-    st.pyplot(fig_line)
     
     # Bar Charts (side-by-side)
     st.subheader("📊 Bar Charts: Conversion Rates")
