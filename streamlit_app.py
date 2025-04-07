@@ -77,21 +77,28 @@ if "data" in st.session_state:
     summary = df_period.groupby(["period", "data_set"])[metrics].mean().reset_index()
     st.dataframe(summary.round(4), use_container_width=True)
 
+    # Line Chart
     st.subheader("📊 Line Chart: Daily Trends")
     selected_metric = st.selectbox("Select metric to plot", metrics)
     daily_trend = df_period.groupby(["date", "data_set"])[selected_metric].mean().reset_index()
-
-    fig_line, ax_line = plt.subplots()
+    
+    fig_line, ax_line = plt.subplots(figsize=(6, 4))
     sns.lineplot(data=daily_trend, x="date", y=selected_metric, hue="data_set", marker="o", ax=ax_line)
     ax_line.set_title(f"Daily {selected_metric.replace('_', ' ').title()} Trend")
+    plt.tight_layout()
     st.pyplot(fig_line)
-
+    
+    # Bar Charts (side-by-side)
     st.subheader("📊 Bar Charts: Conversion Rates")
-    for metric in metrics:
-        fig_bar, ax_bar = plt.subplots()
-        sns.barplot(data=summary, x="data_set", y=metric, hue="period", ax=ax_bar)
-        ax_bar.set_title(metric.replace("_", " ").title())
-        st.pyplot(fig_bar)
+    bar_cols = st.columns(2)
+    for idx, metric in enumerate(metrics):
+        with bar_cols[idx % 2]:
+            fig_bar, ax_bar = plt.subplots(figsize=(6, 4))
+            sns.barplot(data=summary, x="data_set", y=metric, hue="period", ax=ax_bar)
+            ax_bar.set_title(metric.replace("_", " ").title())
+            plt.tight_layout()
+            st.pyplot(fig_bar)
+
 
     st.subheader("🧪 T-Test Results (Test vs Pre-Test)")
     results = []
